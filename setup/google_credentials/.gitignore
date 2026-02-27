@@ -1,0 +1,4 @@
+# Keep directory but ignore all credentials files
+*
+!.gitignore
+!README.md
