@@ -25,8 +25,9 @@ This API is designed to run on-demand (not scheduled) for maximum flexibility. Y
 ### 🚀 Quick Install (Ubuntu/Debian)
 
 **One-line installation** - handles everything automatically:
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/daily-digest/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/adugan-do/daily-digest/main/install.sh | bash
 ```
 
 The installer will:
@@ -41,8 +42,9 @@ See **[INSTALL.md](INSTALL.md)** for details.
 ### 📦 Manual Installation
 
 ```bash
+
 # Clone or download the project
-git clone https://github.com/YOUR_USERNAME/daily-digest.git
+git clone https://github.com/adugan-do/daily-digest.git
 cd daily-digest
 
 # Create virtual environment
@@ -158,155 +160,3 @@ Generate full daily digest
 
 ### `POST /digest/quick`
 Generate digest with default settings (all sources enabled)
-
-## Deployment to DigitalOcean
-
-### Option 1: DigitalOcean App Platform (Recommended)
-
-1. Push your code to GitHub
-2. Create a new App in DigitalOcean App Platform
-3. Connect your GitHub repository
-4. Configure environment variables in the App Platform dashboard
-5. Deploy!
-
-The App Platform will:
-- Auto-build from Dockerfile
-- Provide HTTPS endpoint
-- Handle scaling
-- Monitor health checks
-
-### Option 2: Droplet with Docker
-
-```bash
-# On your Droplet
-git clone <your-repo>
-cd 12_Daily_DIgest
-
-# Create .env file with your keys
-nano .env
-
-# Build and run with Docker Compose
-docker-compose up -d
-
-# Check logs
-docker-compose logs -f
-```
-
-### Option 3: Droplet without Docker
-
-```bash
-# On your Droplet
-sudo apt update
-sudo apt install python3-pip python3-venv nginx
-
-# Clone and setup
-git clone <your-repo>
-cd 12_Daily_DIgest
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# Create systemd service
-sudo nano /etc/systemd/system/daily-digest.service
-```
-
-Add this content:
-```ini
-[Unit]
-Description=Daily Digest API
-After=network.target
-
-[Service]
-User=your-user
-WorkingDirectory=/home/your-user/12_Daily_DIgest
-Environment="PATH=/home/your-user/12_Daily_DIgest/venv/bin"
-ExecStart=/home/your-user/12_Daily_DIgest/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```bash
-# Start service
-sudo systemctl enable daily-digest
-sudo systemctl start daily-digest
-```
-
-## Scheduling Options
-
-Since this API runs on-demand, trigger it with:
-
-### Cron (Linux/Mac)
-```bash
-# Every day at 8 AM
-0 8 * * * curl -X POST https://your-domain.com/digest/quick
-```
-
-### GitHub Actions
-```yaml
-name: Daily Digest
-on:
-  schedule:
-    - cron: '0 8 * * *'  # 8 AM UTC
-  workflow_dispatch:
-
-jobs:
-  trigger:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Call Digest API
-        run: |
-          curl -X POST https://your-domain.com/digest/quick
-```
-
-### EasyCron / Cron-Job.org
-Use any online cron service to make HTTP requests on a schedule
-
-## Testing
-
-Test individual services:
-
-```bash
-# Test health endpoint
-curl http://localhost:8000/health
-
-# Test quick digest
-curl -X POST http://localhost:8000/digest/quick
-
-# Test with custom parameters
-curl -X POST http://localhost:8000/digest \
-  -H "Content-Type: application/json" \
-  -d '{
-    "include_email": true,
-    "include_calendar": true,
-    "location": "San Francisco, CA"
-  }'
-```
-
-## Development Roadmap
-
-- [ ] Implement actual API integrations (currently using sample data)
-- [ ] Add caching with Redis
-- [ ] Add rate limiting
-- [ ] Add authentication/API keys
-- [ ] Add database for storing digest history
-- [ ] Add email delivery of digests
-- [ ] Add Slack/Discord webhook delivery
-- [ ] Add social media integrations (when APIs available)
-
-## Security Notes
-
-- Never commit `.env` file with real API keys
-- Use environment variables in production
-- Consider adding API authentication for your digest endpoint
-- Use HTTPS in production
-- Rotate API keys regularly
-
-## License
-
-MIT License - Feel free to modify for your needs!
-
-## Support
-
-For issues or questions, please open an issue in the repository.
